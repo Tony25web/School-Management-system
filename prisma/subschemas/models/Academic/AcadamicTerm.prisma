@@ -1,0 +1,15 @@
+model AcadamicTerm {
+    id          String   @id @default(uuid())
+    name        String
+    description String
+    duration    String   @default("3 months")
+    admin       Admin    @relation(fields: [adminId], references: [id])
+    adminId     String
+    createAt    DateTime @default(now())
+    updateAt    DateTime @updatedAt
+}
+
+model Admin {
+    id           String         @id @default(uuid())
+    AcadamicTerm AcadamicTerm[]
+}

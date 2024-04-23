@@ -1,0 +1,12 @@
+{
+  "mixers": [
+    {
+      "input": [
+        "./prisma/subschemas/models/Academic/*",
+        "./prisma/subschemas/models/Staff/*",
+        "./prisma/subschemas/models/base.prisma"
+      ],
+      "output": "./schema.prisma"
+    }
+  ]
+}

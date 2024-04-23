@@ -1,0 +1,37 @@
+model Program {
+    id          String    @id @default(uuid())
+    name        String
+    description String
+    duration    String    @default("4 Years")
+    code        String    @default("")
+    adminId     Admin     @relation(fields: [createdBy], references: [id])
+    createdBy   String
+    teachers    Teacher[]
+    students    Student[]
+    Subjects    Subject[]
+    createAt    DateTime  @default(now())
+    updateAt    DateTime  @updatedAt
+}
+
+model Admin {
+    id      String    @id @default(uuid())
+    Program Program[]
+}
+
+model Teacher {
+    id        String   @id @default(uuid())
+    program   Program? @relation(fields: [programId], references: [id])
+    programId String?
+}
+
+model Student {
+    id        String  @id @default(uuid())
+    program   Program @relation(fields: [programId], references: [id])
+    programId String
+}
+
+model Subject {
+    id        String  @id @default(uuid())
+    program   Program @relation(fields: [programId], references: [id])
+    programId String
+}

@@ -1,0 +1,29 @@
+model Subject {
+    id             String       @id @default(uuid())
+    name           String
+    description    String?
+    acadamic       AcadamicTerm @relation(fields: [acadamicTermId], references: [id])
+    acadamicTermId String       @unique
+    admin          Admin        @relation(fields: [adminId], references: [id])
+    adminId        String
+    duration       String       @default("3 Months")
+    createAt       DateTime     @default(now())
+    updateAt       DateTime     @updatedAt
+    teacher        Teacher?     @relation(fields: [teacherId], references: [id])
+    teacherId      String?
+}
+
+model Teacher {
+    id      String    @id @default(uuid())
+    subject Subject[]
+}
+
+model AcadamicTerm {
+    id      String   @id @default(uuid())
+    subject Subject?
+}
+
+model Admin {
+    id      String    @id @default(uuid())
+    Subject Subject[]
+}

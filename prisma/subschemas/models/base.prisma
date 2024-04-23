@@ -1,0 +1,21 @@
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "postgresql"
+    url      = "postgresql://postgres:christ@localhost:5432/School_Management?schema=public"
+}
+
+// generator erd {
+//     provider                  = "prisma-erd-generator"
+//     output                    = "../ERD.svg"
+//     mmdcPath                  = "node_modules/.bin"
+//     includeRelationFromFields = true
+// }
+
+// generator dbml {
+//     provider            = "prisma-dbml-generator"
+//     output              = "../dbml"
+//     projectDatabaseType = "PostgreSQL"
+// }

@@ -1,0 +1,9 @@
+model Admin {
+    id                String    @id @default(uuid())
+    name              String
+    email             String
+    password          String
+    role              String    @default("admin")
+    createdAt         DateTime  @updatedAt()
+    passwordChangedAt DateTime? @default(now())
+}

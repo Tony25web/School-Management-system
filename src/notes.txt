@@ -1,0 +1,37 @@
+//todo refactoring for the authentication 
+// interface Auth {
+    // type modelTypes="admin"|"teacher"|"student"
+//   signUp: (email: string, password: string, name: string) => Promise<any>;
+//   generateJWT:(user_id: string) => string;
+//   verifyJWT:(password: string) => string | JwtPayload;
+//   verify:(
+//     enteredPassword: string,
+//     userPassword: string
+//   ) => Promise<Boolean>;
+// }
+// type AuthKeys<T> = {
+//     [K in keyof T]: T[K] extends Auth[keyof Auth] ? K : never;
+// }[keyof T];
+// class Authentication<T extends AuthGeneric<T>& Auth>
+
+// type AuthGeneric<T> = Pick<T, AuthKeys<T>>;
+// export class Authentication{
+
+// }
+// new Authentication<typeof AdminExtension.admin>(AdminExtension.admin,"admin");
+// type ClassDataKeys<T> = {
+
+//     // Iterate over each property.
+//     [K in keyof T]:
+
+//       // If the property is a function...
+//       T[K] extends (...args: any[]) => any
+
+//       // if Functions are not allowed, use never to exclude it.
+//       ? K
+
+//       // Not a property, it is a function, set the value of this property to its own key.
+//       : never
+
+//   // Get the union of all values (which are now the keys that have not been set to `never`)
+//   }[keyof T]

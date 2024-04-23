@@ -1,0 +1,45 @@
+model Teacher {
+    id                String        @id @default(uuid())
+    name              String
+    email             String
+    password          String
+    teacherID         String        @default("")
+    dateEmployed      DateTime      @default(now())
+    isWithdrawn       Boolean       @default(false)
+    isSuspended       Boolean       @default(false)
+    passwordChangedAt DateTime?     @default(now())
+    role              Role          @default(teacher)
+    applicationStatus Status        @default(pending)
+    examsCreated      Exam[]
+    createdId         Admin?        @relation(fields: [createdBy], references: [id])
+    createdBy         String?
+    acadamicId        AcadamicTerm? @relation(fields: [acadamicTermId], references: [id])
+    acadamicTermId    String?       @unique
+}
+
+model Exam {
+    id        String  @id @default(uuid())
+    teacher   Teacher @relation(fields: [teacherId], references: [id])
+    teacherId String
+}
+
+model Admin {
+    id      String    @id @default(uuid())
+    Teacher Teacher[]
+}
+
+model AcadamicTerm {
+    id        String   @id @default(uuid())
+    teacherId Teacher?
+}
+
+enum Role {
+    teacher
+    admin
+}
+
+enum Status {
+    pending
+    approved
+    rejected
+}

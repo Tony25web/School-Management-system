@@ -1,0 +1,270 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = "postgresql://postgres:christ@localhost:5432/School_Management?schema=public"
+}
+
+model AcadamicTerm {
+  id          String      @id @default(uuid())
+  name        String
+  description String
+  duration    String      @default("3 months")
+  adminId     String
+  createAt    DateTime    @default(now())
+  updateAt    DateTime    @updatedAt
+  admin       Admin       @relation("AcadamicTermToAdmin", fields: [adminId], references: [id])
+  ExamResult  ExamResult? @relation("AcadamicTermToExamResult")
+  subject     Subject?    @relation("AcadamicTermToSubject")
+  teacherId   Teacher?    @relation("AcadamicTermToTeacher")
+}
+
+model Admin {
+  id                String         @id @default(uuid())
+  name              String
+  email             String
+  password          String
+  role              String         @default("admin")
+  createdAt         DateTime       @updatedAt
+  passwordChangedAt DateTime?      @default(now())
+  AcadamicTerm      AcadamicTerm[] @relation("AcadamicTermToAdmin")
+  AcadamicYear      AcadamicYear[] @relation("AcadamicYearToAdmin")
+  classLevel        ClassLevel[]   @relation("AdminToClassLevel")
+  Program           Program[]      @relation("AdminToProgram")
+  Subject           Subject[]      @relation("AdminToSubject")
+  Teacher           Teacher[]      @relation("AdminToTeacher")
+}
+
+model AcadamicYear {
+  id         String      @id @default(uuid())
+  name       String
+  isCurrent  Boolean     @default(false)
+  createdBy  String
+  createAt   DateTime    @default(now())
+  updateAt   DateTime    @updatedAt
+  fromYear   DateTime
+  toYear     DateTime
+  admin      Admin       @relation("AcadamicYearToAdmin", fields: [createdBy], references: [id])
+  Exam       Exam?       @relation("AcadamicYearToExam")
+  ExamResult ExamResult? @relation("AcadamicYearToExamResult")
+  students   Student[]   @relation("AcadamicYearToStudent")
+  teachers   Teacher[]   @relation("AcadamicYearToTeacher")
+  YearGroup  YearGroup?  @relation("AcadamicYearToYearGroup")
+}
+
+model Student {
+  id             String        @id @default(uuid())
+  AcadamicYearId String?
+  classLevelId   String?
+  programId      String
+  name           String
+  perfectName    String?
+  email          String
+  password       String
+  studentId      String        @default("")
+  role           String        @default("student")
+  dateAdmitted   DateTime      @default(now())
+  isWithdrawn    Boolean       @default(false)
+  isSuspended    Boolean       @default(false)
+  isGraduated    Boolean       @default(false)
+  isPromoted     Boolean       @default(false)
+  yearGraduated  String?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  examResult     ExamResult[]  @relation("ExamResultToStudent")
+  examResults    ExamResults[] @relation("ExamResultsToStudent")
+  AcadamicYear   AcadamicYear? @relation("AcadamicYearToStudent", fields: [AcadamicYearId], references: [id])
+  ClassLevel     ClassLevel?   @relation("ClassLevelToStudent", fields: [classLevelId], references: [id])
+  program        Program       @relation("ProgramToStudent", fields: [programId], references: [id])
+}
+
+model Teacher {
+  id                String        @id @default(uuid())
+  AcadamicYearId    String?
+  classLevelId      String?
+  programId         String
+  name              String
+  email             String
+  password          String
+  teacherID         String        @default("")
+  dateEmployed      DateTime      @default(now())
+  isWithdrawn       Boolean       @default(false)
+  isSuspended       Boolean       @default(false)
+  role              Role          @default(teacher)
+  applicationStatus Status        @default(pending)
+  createdBy         String
+  acadamicTermId    String        @unique
+  examsCreated      Exam[]        @relation("ExamToTeacher")
+  question          Question?     @relation("QuestionToTeacher")
+  AcadamicYear      AcadamicYear? @relation("AcadamicYearToTeacher", fields: [AcadamicYearId], references: [id])
+  acadamicId        AcadamicTerm  @relation("AcadamicTermToTeacher", fields: [acadamicTermId], references: [id])
+  ClassLevel        ClassLevel?   @relation("ClassLevelToTeacher", fields: [classLevelId], references: [id])
+  createdId         Admin         @relation("AdminToTeacher", fields: [createdBy], references: [id])
+  program           Program       @relation("ProgramToTeacher", fields: [programId], references: [id])
+}
+
+model ClassLevel {
+  id          String      @id @default(uuid())
+  adminId     String?
+  createAt    DateTime    @default(now())
+  updateAt    DateTime    @updatedAt
+  description String
+  name        String
+  admin       Admin?      @relation("AdminToClassLevel", fields: [adminId], references: [id])
+  Exam        Exam?       @relation("ClassLevelToExam")
+  ExamResult  ExamResult? @relation("ClassLevelToExamResult")
+  students    Student[]   @relation("ClassLevelToStudent")
+  subjects    Subject[]   @relation("ClassLevelToSubject")
+  teachers    Teacher[]   @relation("ClassLevelToTeacher")
+}
+
+model Subject {
+  id             String       @id @default(uuid())
+  classLevelId   String?
+  programId      String
+  name           String
+  description    String?
+  teacherId      String?
+  acadamicTermId String       @unique
+  adminId        String
+  duration       String       @default("3 Months")
+  createAt       DateTime     @default(now())
+  updateAt       DateTime     @updatedAt
+  exam           Exam?        @relation("ExamToSubject")
+  ExamResult     ExamResult?  @relation("ExamResultToSubject")
+  acadamic       AcadamicTerm @relation("AcadamicTermToSubject", fields: [acadamicTermId], references: [id])
+  admin          Admin        @relation("AdminToSubject", fields: [adminId], references: [id])
+  ClassLevel     ClassLevel?  @relation("ClassLevelToSubject", fields: [classLevelId], references: [id])
+  program        Program      @relation("ProgramToSubject", fields: [programId], references: [id])
+}
+
+model ExamResult {
+  id             String           @id @default(uuid())
+  studentId      String?
+  examId         String           @unique
+  subjectId      String           @unique
+  acadamicYearId String           @unique
+  acadamicTermId String           @unique
+  classLevelId   String           @unique
+  grade          Int
+  score          Int
+  passMark       Int              @default(50)
+  status         ExamResultStatus @default(failed)
+  reamarks       Remarks          @default(poor)
+  position       Int
+  isPublished    Boolean          @default(false)
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  acadaminTerm   AcadamicTerm     @relation("AcadamicTermToExamResult", fields: [acadamicTermId], references: [id])
+  acadamicYear   AcadamicYear     @relation("AcadamicYearToExamResult", fields: [acadamicYearId], references: [id])
+  classLevel     ClassLevel       @relation("ClassLevelToExamResult", fields: [classLevelId], references: [id])
+  exam           Exam             @relation("ExamToExamResult", fields: [examId], references: [id])
+  Student        Student?         @relation("ExamResultToStudent", fields: [studentId], references: [id])
+  student        Subject          @relation("ExamResultToSubject", fields: [subjectId], references: [id])
+}
+
+model Exam {
+  id            String       @id @default(uuid())
+  name          String
+  description   String
+  subjectId     String       @unique
+  programId     String
+  passMark      Int          @default(50)
+  totalMark     Int          @default(100)
+  duration      String       @default("30")
+  examDate      DateTime
+  examTime      String
+  examType      String       @default("Quiz")
+  examStatus    ExamStatus   @default(pending)
+  classLevelId  String       @unique
+  createdBy     String       @unique
+  acadanmicYear String       @unique
+  createAt      DateTime     @default(now())
+  updateAt      DateTime     @updatedAt
+  teacherId     String
+  acadamicYear  AcadamicYear @relation("AcadamicYearToExam", fields: [acadanmicYear], references: [id])
+  classLevel    ClassLevel   @relation("ClassLevelToExam", fields: [classLevelId], references: [id])
+  program       Program      @relation("ExamToProgram", fields: [programId], references: [id])
+  subject       Subject      @relation("ExamToSubject", fields: [subjectId], references: [id])
+  teacher       Teacher      @relation("ExamToTeacher", fields: [teacherId], references: [id])
+  ExamResult    ExamResult?  @relation("ExamToExamResult")
+  questions     Question[]   @relation("ExamToQuestion")
+}
+
+model Program {
+  id          String    @id @default(uuid())
+  name        String
+  description String
+  duration    String    @default("4 Years")
+  code        String    @default("")
+  createdBy   String
+  createAt    DateTime  @default(now())
+  updateAt    DateTime  @updatedAt
+  Exam        Exam[]    @relation("ExamToProgram")
+  adminId     Admin     @relation("AdminToProgram", fields: [createdBy], references: [id])
+  students    Student[] @relation("ProgramToStudent")
+  Subjects    Subject[] @relation("ProgramToSubject")
+  teachers    Teacher[] @relation("ProgramToTeacher")
+}
+
+model Question {
+  id            String   @id @default(uuid())
+  examId        String?
+  questionName  String
+  optionA       String
+  optionB       String
+  optionC       String
+  optionD       String
+  correctAnswer String
+  isCorrect     Boolean  @default(false)
+  createdBy     String   @unique
+  createAt      DateTime @default(now())
+  updateAt      DateTime @updatedAt
+  teacher       Teacher  @relation("QuestionToTeacher", fields: [createdBy], references: [id])
+  Exam          Exam?    @relation("ExamToQuestion", fields: [examId], references: [id])
+}
+
+model ExamResults {
+  id        String   @id @default(uuid())
+  studentId String?
+  Student   Student? @relation("ExamResultsToStudent", fields: [studentId], references: [id])
+}
+
+model YearGroup {
+  id             String       @id @default(uuid())
+  name           String
+  acadamicYearId String       @unique
+  createAt       DateTime     @default(now())
+  updateAt       DateTime     @updatedAt
+  acadamicYear   AcadamicYear @relation("AcadamicYearToYearGroup", fields: [acadamicYearId], references: [id])
+}
+
+enum ExamResultStatus {
+  failed
+  passed
+}
+
+enum Remarks {
+  Excellent
+  good
+  poor
+}
+
+enum ExamStatus {
+  pending
+  approved
+  live
+}
+
+enum Role {
+  teacher
+  admin
+}
+
+enum Status {
+  pending
+  approved
+  rejected
+}

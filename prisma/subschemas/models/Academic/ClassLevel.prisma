@@ -1,0 +1,36 @@
+//class level is like the number of the year like the first year ,the second year ,etc...
+model ClassLevel {
+    id          String    @id @default(uuid())
+    name        String
+    description String
+    admin       Admin?    @relation(fields: [adminId], references: [id])
+    adminId     String?
+    teachers    Teacher[]
+    students    Student[]
+    subjects    Subject[]
+    createAt    DateTime  @default(now())
+    updateAt    DateTime  @updatedAt
+}
+
+model Admin {
+    id         String       @id @default(uuid())
+    classLevel ClassLevel[]
+}
+
+model Teacher {
+    id           String      @id @default(uuid())
+    ClassLevel   ClassLevel? @relation(fields: [classLevelId], references: [id])
+    classLevelId String?
+}
+
+model Student {
+    id           String      @id @default(uuid())
+    ClassLevel   ClassLevel? @relation(fields: [classLevelId], references: [id])
+    classLevelId String?
+}
+
+model Subject {
+    id           String      @id @default(uuid())
+    ClassLevel   ClassLevel? @relation(fields: [classLevelId], references: [id])
+    classLevelId String?
+}

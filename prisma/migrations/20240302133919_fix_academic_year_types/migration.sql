@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "AcadamicYear" ALTER COLUMN "fromYear" SET DATA TYPE TEXT,
+ALTER COLUMN "toYear" SET DATA TYPE TEXT;

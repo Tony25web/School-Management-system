@@ -1,0 +1,31 @@
+model AcadamicYear {
+    id        String    @id @default(uuid())
+    name      String
+    fromYear  DateTime
+    toYear    DateTime
+    isCurrent Boolean   @default(false)
+    admin     Admin     @relation(fields: [createdBy], references: [id])
+    createdBy String
+    students  Student[]
+    teachers  Teacher[]
+    createAt  DateTime  @default(now())
+    updateAt  DateTime  @updatedAt
+}
+
+model Admin {
+    id           String         @id @default(uuid())
+    AcadamicYear AcadamicYear[]
+}
+
+model Student {
+    id String @id @default(uuid())
+
+    AcadamicYear   AcadamicYear? @relation(fields: [AcadamicYearId], references: [id])
+    AcadamicYearId String?
+}
+
+model Teacher {
+    id             String        @id @default(uuid())
+    AcadamicYear   AcadamicYear? @relation(fields: [AcadamicYearId], references: [id])
+    AcadamicYearId String?
+}

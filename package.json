@@ -1,0 +1,49 @@
+{
+  "name": "school-management-system",
+  "version": "1.0.0",
+  "description": "",
+  "main": "./build/server.js",
+  "scripts": {
+    "exec": "ts-node --files ./src/app/app.ts",
+    "start:server": "nodemon build/server.js",
+    "start:build": "tsc -w",
+    "start": "concurrently npm:start:*"
+  },
+  "keywords": [
+    "lms",
+    "nodejs"
+  ],
+  "author": "Dev Tony Bustaty ",
+  "license": "ISC",
+  "devDependencies": {
+    "@mermaid-js/mermaid-cli": "^10.8.0",
+    "@types/dotenv": "^8.2.0",
+    "@types/jsonwebtoken": "^9.0.5",
+    "@types/node": "^20.11.20",
+    "dotenv": "^10.0.0",
+    "http-status-codes": "^2.3.0",
+    "prisma-dbml-generator": "^0.12.0",
+    "prisma-erd-generator": "^1.11.2",
+    "prismix": "^1.0.22",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3"
+  },
+  "dependencies": {
+    "@prisma/client": "^5.9.1",
+    "@types/bcryptjs": "^2.4.6",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21",
+    "@types/http-status-codes": "^1.2.0",
+    "@types/morgan": "^1.9.9",
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.20.2",
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "express-async-handler": "^1.2.0",
+    "jsonwebtoken": "^9.0.2",
+    "morgan": "^1.10.0",
+    "prisma": "^5.9.1",
+    "prisma-multischema": "^1.1.4",
+    "zod": "^3.22.4"
+  }
+}

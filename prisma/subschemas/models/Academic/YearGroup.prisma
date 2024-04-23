@@ -1,0 +1,20 @@
+model YearGroup {
+    id             String        @id @default(uuid())
+    name           String
+    acadamicYear   AcadamicYear? @relation(fields: [acadamicYearId], references: [id])
+    acadamicYearId String        @unique
+    createAt       DateTime      @default(now())
+    updateAt       DateTime      @updatedAt
+    admin          Admin         @relation(fields: [adminId], references: [id])
+    adminId        String
+}
+
+model Admin {
+    id        String      @id @default(uuid())
+    YearGroup YearGroup[]
+}
+
+model AcadamicYear {
+    id        String     @id @default(uuid())
+    YearGroup YearGroup?
+}

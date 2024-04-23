@@ -1,0 +1,19 @@
+model Question {
+    id            String   @id @default(uuid())
+    questionName  String
+    optionA       String
+    optionB       String
+    optionC       String
+    optionD       String
+    correctAnswer String
+    isCorrect     Boolean  @default(false)
+    teacher       Teacher  @relation(fields: [createdBy], references: [id])
+    createdBy     String   @unique
+    createAt      DateTime @default(now())
+    updateAt      DateTime @updatedAt
+}
+
+model Teacher {
+    id       String    @id @default(uuid())
+    question Question?
+}

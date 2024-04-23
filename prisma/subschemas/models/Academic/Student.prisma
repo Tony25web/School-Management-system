@@ -1,0 +1,25 @@
+model Student {
+    id                String        @id @default(uuid())
+    name              String
+    perfectName       String?
+    email             String
+    passwordChangedAt DateTime?     @default(now())
+    password          String
+    studentId         String        @default("")
+    role              String        @default("student")
+    dateAdmitted      DateTime      @default(now())
+    examResults       ExamResults[]
+    isWithdrawn       Boolean       @default(false)
+    isSuspended       Boolean       @default(false)
+    isGraduated       Boolean       @default(false)
+    isPromoted        Boolean       @default(false)
+    yearGraduated     String?
+    createdAt         DateTime      @default(now())
+    updatedAt         DateTime      @updatedAt()
+}
+
+model ExamResults {
+    id        String   @id @default(uuid())
+    Student   Student? @relation(fields: [studentId], references: [id])
+    studentId String?
+}
