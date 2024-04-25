@@ -28,7 +28,6 @@ export const authorizedTo = (...roles:string[]) =>
   expressAsyncHandler(async (req:Request, res:Response, next:NextFunction) => {
     // 1- access routes
     // 2 - access registered users (req.user.role)
-    console.log(req.user.role)
     if (!roles.includes(req.user.role)) {
       throw new APIError("you are not allowed to access this route", StatusCodes.FORBIDDEN);
     }

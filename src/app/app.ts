@@ -10,6 +10,7 @@ import { router as ClassLevelRouter } from "../routes/Academic/classLevel";
 import { router as SubjectRouter } from "../routes/Academic/Subject";
 import { router as YearGroupRouter } from "../routes/Academic/YearGroup";
 import { router as TeacherRouter } from "../routes/staff/Teacher";
+import { router as ExamRouter } from "../routes/Academic/Exam";
 import { APIError } from "../utils/APIError";
 export const app= express();
 app.use(bodyParser.json()); 
@@ -21,6 +22,7 @@ app.use("/api/v1/subjects",SubjectRouter)
 app.use("/api/v1/programs",ProgramRouter)
 app.use("/api/v1/year-groups",YearGroupRouter)
 app.use("/api/v1/teachers",TeacherRouter)
+app.use("/api/v1/exams",ExamRouter)
 app.use(morgan("dev"));
 app.use(errorHandler)
 app.all("*",(req, res, next) =>{

@@ -16,6 +16,7 @@ model AcadamicTerm {
 	createAt DateTime @default(now())
 	updateAt DateTime @updatedAt
 	ExamResult ExamResult? @relation(name: "AcadamicTermToExamResult")
+	Exam Exam? @relation(name: "AcadamicTermToExam")
 	subject Subject? @relation(name: "AcadamicTermToSubject")
 	teacherId Teacher? @relation(name: "AcadamicTermToTeacher")
 }
@@ -173,20 +174,21 @@ model Exam {
 	passMark Int @default(50)
 	totalMark Int @default(100)
 	duration String @default("30")
-	examDate DateTime 
+	examDate String 
 	examTime String 
 	examType String @default("Quiz")
 	examStatus ExamStatus @default(pending)
 	questions Question[] @relation(name: "ExamToQuestion")
 	classLevel ClassLevel @relation(name: "ClassLevelToExam", fields: [classLevelId], references: [id])
 	classLevelId String @unique
-	createdBy String @unique
-	acadamicYear AcadamicYear @relation(name: "AcadamicYearToExam", fields: [acadanmicYear], references: [id])
-	acadanmicYear String @unique
+	AcademicYear AcadamicYear @relation(name: "AcadamicYearToExam", fields: [academicYear], references: [id])
+	academicYear String @unique
+	AcademicTerm AcadamicTerm @relation(name: "AcadamicTermToExam", fields: [academicTerm], references: [id])
+	academicTerm String @unique
 	createAt DateTime @default(now())
 	updateAt DateTime @updatedAt
-	teacher Teacher @relation(name: "ExamToTeacher", fields: [teacherId], references: [id])
-	teacherId String 
+	teacher Teacher @relation(name: "ExamToTeacher", fields: [createBy], references: [id])
+	createBy String 
 }
 model Program {
 	id String @id @default(uuid())

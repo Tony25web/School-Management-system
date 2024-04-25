@@ -54,7 +54,7 @@ export class Subject {
     }
   }
 
-  //@desc   retrieving existing Subjects
+  //@desc   retrieve All existing Subjects
   //@route  Get /api/v1/subjects
   //@access  Private(Admin)
 

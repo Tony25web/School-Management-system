@@ -1,26 +1,27 @@
 model Exam {
-    id            String       @id @default(uuid())
-    name          String
-    description   String
-    subject       Subject      @relation(fields: [subjectId], references: [id])
-    subjectId     String       @unique
-    program       Program      @relation(fields: [programId], references: [id])
-    programId     String
-    passMark      Int          @default(50)
-    totalMark     Int          @default(100)
-    duration      String       @default("30")
-    examDate      DateTime
-    examTime      String
-    examType      String       @default("Quiz")
-    examStatus    ExamStatus   @default(pending)
-    questions     Question[]
-    classLevel    ClassLevel   @relation(fields: [classLevelId], references: [id])
-    classLevelId  String       @unique
-    createdBy     String       @unique
-    acadamicYear  AcadamicYear @relation(fields: [acadanmicYear], references: [id])
-    acadanmicYear String       @unique
-    createAt      DateTime     @default(now())
-    updateAt      DateTime     @updatedAt
+    id           String       @id @default(uuid())
+    name         String
+    description  String
+    subject      Subject      @relation(fields: [subjectId], references: [id])
+    subjectId    String       @unique
+    program      Program      @relation(fields: [programId], references: [id])
+    programId    String
+    passMark     Int          @default(50)
+    totalMark    Int          @default(100)
+    duration     String       @default("30")
+    examDate     String
+    examTime     String
+    examType     String       @default("Quiz")
+    examStatus   ExamStatus   @default(pending)
+    questions    Question[]
+    classLevel   ClassLevel   @relation(fields: [classLevelId], references: [id])
+    classLevelId String       @unique
+    AcademicYear AcadamicYear @relation(fields: [academicYear], references: [id])
+    academicYear String       @unique
+    AcademicTerm AcadamicTerm @relation(fields: [academicTerm], references: [id])
+    academicTerm String       @unique
+    createAt     DateTime     @default(now())
+    updateAt     DateTime     @updatedAt
 }
 
 model Subject {
@@ -31,6 +32,11 @@ model Subject {
 model Program {
     id   String @id @default(uuid())
     Exam Exam[]
+}
+
+model AcadamicTerm {
+    id   String @id @default(uuid())
+    Exam Exam?
 }
 
 enum ExamStatus {

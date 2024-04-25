@@ -18,9 +18,9 @@ model Teacher {
 }
 
 model Exam {
-    id        String  @id @default(uuid())
-    teacher   Teacher @relation(fields: [teacherId], references: [id])
-    teacherId String
+    id       String  @id @default(uuid())
+    teacher  Teacher @relation(fields: [createBy], references: [id])
+    createBy String
 }
 
 model Admin {

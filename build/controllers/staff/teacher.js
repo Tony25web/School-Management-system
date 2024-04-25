@@ -98,7 +98,7 @@ class Teacher {
     //@access  Private Teacher only
     static async getTeacherProfile(req, res, next) {
         const teacher = await prisma.teacher.findFirst({
-            where: { id: req.user?.id },
+            where: { id: req.user?.id }, include: { examsCreated: true },
         });
         if (!teacher) {
             throw new APIError_1.APIError("there is no teacher profile to fetch", http_status_codes_1.StatusCodes.NOT_FOUND);
@@ -138,10 +138,10 @@ class Teacher {
         const updatedTeacher = await prisma.teacher.update({
             where: { id: req.params.teacherId, isWithdrawn: false },
             data: {
-                program: { connect: { id: programId } },
-                ClassLevel: { connect: { id: classLevelId } },
-                AcadamicYear: { connect: { id: AcademicYearId } },
-                subject: { connect: { id: subjectId } },
+                program: programId ? { connect: { id: programId } } : undefined,
+                ClassLevel: classLevelId ? { connect: { id: classLevelId } } : undefined,
+                AcadamicYear: AcademicYearId ? { connect: { id: AcademicYearId } } : undefined,
+                subject: subjectId ? { connect: { id: subjectId } } : undefined,
             },
             include: {
                 program: true,

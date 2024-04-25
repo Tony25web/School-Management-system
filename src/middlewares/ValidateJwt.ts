@@ -28,7 +28,6 @@ export const createValidateJwtMiddleware =expressAsyncHandler(async (req: Reques
             throw new APIError( "This account does not exist anymore. Please try to sign up again.",StatusCodes.NOT_FOUND)
         }
         let UserFound=user.filter(value=>value!==null).at(0)!;
-        console.log(UserFound)
         // Check if the user changed his password after the generation of the token
         // if (UserFound.passwordChangedAt as Date) {
         //     console.log(UserFound.passwordChangedAt as Date)

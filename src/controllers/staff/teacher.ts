@@ -115,7 +115,7 @@ export class Teacher {
     next: NextFunction
   ) {
     const teacher = await prisma.teacher.findFirst({
-      where: { id: req.user?.id },
+      where: { id: req.user?.id },include:{examsCreated:true},
     });
     if (!teacher) {
       throw new APIError(
@@ -165,15 +165,15 @@ export class Teacher {
     res: Response,
     next: NextFunction
   ) {
-    const { programId, classLevelId, AcademicYearId, subjectId } = req.body;
+    const { programId, classLevelId, AcademicYearId, subjectId } = req.body as TeacherType &{subjectId:string,AcademicYearId:string};
     // assign a program to the teacher
     const updatedTeacher = await prisma.teacher.update({
       where: { id: req.params.teacherId, isWithdrawn: false },
       data: {
-        program: { connect: { id: programId } },
-        ClassLevel: { connect: { id: classLevelId } },
-        AcadamicYear: { connect: { id: AcademicYearId } },
-        subject: { connect: { id: subjectId } },
+        program: programId ? { connect: { id: programId } } : undefined,
+        ClassLevel: classLevelId ? { connect: { id: classLevelId } } : undefined,
+        AcadamicYear: AcademicYearId ? { connect: { id: AcademicYearId } } : undefined,
+        subject: subjectId ? { connect: { id: subjectId } } : undefined,
       },
       include: {
         program: true,
