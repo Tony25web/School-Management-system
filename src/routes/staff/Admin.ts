@@ -2,7 +2,7 @@ import express from 'express';
 import {Admin} from '../../controllers/staff/Admin';
 import { checkAdminRegistration } from '../../validators/Admin';
 import { authorizedTo } from '../../middlewares/Authentication';
-import { AdminExtension } from '../../Prisma Extensions/AdminExtension';
+import { AdminExtension } from '../../Prisma Extensions/Admin';
 // Define a generic type for the dynamic methods attached to the model
 type ModelMethods<T> = {
   [K in keyof T]: T[K] extends (arg:any) => any ? T[K] : never;

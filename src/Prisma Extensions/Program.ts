@@ -1,7 +1,7 @@
 import { StatusCodes } from "http-status-codes";
 import { APIError } from "../utils/APIError";
 import { PrismaClientProvider } from "../controllers/PrismaClient";
-import { localJwtPayload } from "./AdminExtension";
+import { localJwtPayload } from "./Admin";
 import {Request,Response,NextFunction } from "express";
 import { Auth } from "../middlewares/Authentication";
 const prisma = PrismaClientProvider.getPrismaClient();

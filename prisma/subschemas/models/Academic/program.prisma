@@ -25,9 +25,9 @@ model Teacher {
 }
 
 model Student {
-    id        String  @id @default(uuid())
-    program   Program @relation(fields: [programId], references: [id])
-    programId String
+    id        String   @id @default(uuid())
+    program   Program? @relation(fields: [programId], references: [id])
+    programId String?
 }
 
 model Subject {

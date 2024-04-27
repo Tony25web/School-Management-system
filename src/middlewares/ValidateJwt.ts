@@ -2,7 +2,7 @@ import { StatusCodes } from "http-status-codes";
 import { APIError } from "../utils/APIError";
 import { Auth } from "./Authentication";
 import {Request,Response,NextFunction} from "express"
-import { localJwtPayload } from "../Prisma Extensions/AdminExtension";
+import { localJwtPayload } from "../Prisma Extensions/Admin";
 import { Student,Admin,Teacher } from "@prisma/client";
 import expressAsyncHandler from "express-async-handler";
 import { PrismaClientProvider } from "../controllers/PrismaClient";

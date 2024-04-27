@@ -56,11 +56,11 @@ model Student {
 	id String @id @default(uuid())
 	AcadamicYear AcadamicYear? @relation(name: "AcadamicYearToStudent", fields: [AcadamicYearId], references: [id])
 	AcadamicYearId String? 
-	ClassLevel ClassLevel? @relation(name: "ClassLevelToStudent", fields: [classLevelId], references: [id])
+	classLevel ClassLevel? @relation(name: "ClassLevelToStudent", fields: [classLevelId], references: [id])
 	classLevelId String? 
 	examResult ExamResult[] @relation(name: "ExamResultToStudent")
-	program Program @relation(name: "ProgramToStudent", fields: [programId], references: [id])
-	programId String 
+	program Program? @relation(name: "ProgramToStudent", fields: [programId], references: [id])
+	programId String? 
 	name String 
 	perfectName String? 
 	email String 

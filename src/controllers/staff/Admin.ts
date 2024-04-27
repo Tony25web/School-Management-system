@@ -4,6 +4,7 @@ import { PrismaClient } from "@prisma/client";
 import {Auth} from "../../middlewares/Authentication";
 import { APIError } from "../../utils/APIError";
 import { Admin as AdminType } from "@prisma/client";
+import { exclude } from "../../utils/Exclude";
 const prisma=new PrismaClient();
 export interface SignUpCredentials{
 id?:string
@@ -11,19 +12,6 @@ email:string
 password:string
 name:string
 role?:string
-}
-
-export function exclude<UserType extends Record<string, any>, Key extends keyof UserType>(
-  user: UserType,
-  keys: Key[]
-): Omit<UserType, Key> {
-  const filteredUser: Partial<UserType> = {};
-  for (const [key, value] of Object.entries(user)) {
-    if (!keys.includes(key as Key)) {
-      filteredUser[key as keyof UserType] = value;
-    }
-  }
-  return filteredUser as Omit<UserType, Key>;
 }
 
 export class Admin{
