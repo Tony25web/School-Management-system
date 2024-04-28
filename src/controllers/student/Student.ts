@@ -7,7 +7,11 @@ import { Auth } from "../../middlewares/Authentication";
 import { StudentExtension } from "../../Prisma Extensions/Student";
 import { exclude } from "../../utils/Exclude";
 const prisma = PrismaClientProvider.getPrismaClient();
-
+interface studentPayload {
+  name?: string;
+  email?: string;
+  password?: string;
+}
 //@desc   Admin Register a new Student
 //@route  POST /api/v1/students/admin/register
 //@access  Private
@@ -18,7 +22,7 @@ export class Student {
     next: NextFunction
   ) {
     try {
-      const { name, email, password } = req.body as StudentType;
+      const { name, email, password } = req.body as Required<studentPayload>;
       const student = await prisma.student.findFirst({ where: { name } });
       if (student) {
         throw new APIError(
@@ -48,7 +52,9 @@ export class Student {
   //@access  Public
   static async loginStudent(req: Request, res: Response, next: NextFunction) {
     try {
-      const { email, password } = req.body as StudentType;
+      const { email, password } = req.body as Required<
+        Omit<studentPayload, "name">
+      >;
       const student = await prisma.student.findFirst({ where: { email } });
 
       if (!student) {
@@ -227,6 +233,83 @@ export class Student {
         status: "success",
         message: "student updated successfully",
         updatedStudent,
+      });
+    } catch (error: Error | unknown) {
+      next(error);
+    }
+  }
+  //@desc Student taking Exams
+  //@route POST /api/v1/students/exams/:examId/write
+  //@access  Private Student only
+  static async WriteExam(req: Request, res: Response, next: NextFunction) {
+    try {
+      //retrieve the student who wants to write the answers for the questions
+      const studentFound = await prisma.student.findFirst({
+        where: { id: req.user.id },
+      });
+      if (!studentFound) {
+        throw new APIError("student not found", StatusCodes.NOT_FOUND);
+      }
+      // retrieve the exam that the student wants to take
+      const examFound = await prisma.exam.findFirst({
+        where: { id: req.params.examId },
+        include: { questions: true },
+      });
+      if (!examFound) {
+        throw new APIError("exam not found", StatusCodes.NOT_FOUND);
+      }
+      // retrieve the questions
+      const questions = examFound?.questions;
+      // retrieve the answers of the student
+      const answers = req.body.answers as string[];
+      if (answers.length !== questions.length) {
+        throw new APIError(
+          "you didn't answer all of the required questions in the exam,please answer all the questions",
+          StatusCodes.BAD_REQUEST
+        );
+      }
+      // Build report Object
+      let correctAnswers = 0,
+        wrongAnswers = 0,
+        totalQuestions = 0,
+        grade = 0,
+        score = 0,
+        answeredQuestions = [] as Array<{name:string,correctAnswer:string,isCorrect:boolean}>;
+
+      //  check for answers
+      for (let i = 0; i < questions.length; i++) {
+        //find the question
+        const question = questions[i];
+        //check if the answer is correct
+        if (question.correctAnswer === answers[i]) {
+          correctAnswers++;
+          score++;
+          question.isCorrect = true;
+        } else {
+          wrongAnswers++;
+        }
+        //calculate reports
+        totalQuestions = questions.length;
+        grade = (correctAnswers / totalQuestions) * 100;
+        answeredQuestions = questions.map((question) => {
+          return {
+            name: question.questionName,
+            correctAnswer: question.correctAnswer,
+            isCorrect: question.isCorrect,
+          };
+        });
+      }
+      res.status(StatusCodes.OK).json({
+        status: "success",
+        message: "student updated successfully",
+        Result: {
+          correctAnswers,
+          wrongAnswers,
+          score,
+          totalQuestions,
+          grade,
+          answeredQuestions,
+        },
       });
     } catch (error: Error | unknown) {
       next(error);

@@ -42,6 +42,12 @@ class Student {
       authorizedTo("student"),
       StudentController.getStudentProfile
     );
+    this.router.post(
+      "/exams/:examId/write",
+      createValidateJwtMiddleware,
+      authorizedTo("student"),
+      StudentController.WriteExam
+    );
     this.router.patch(
       "/profile/update",
       createValidateJwtMiddleware,
