@@ -20,37 +20,54 @@ export class Exam {
       examTime,
       examType,
       academicYear,
-      classLevelId
+      classLevelId,
     } = req.body as ExamType;
     // find teacher
-    const teacherFound= await prisma.teacher.findFirst({where:{id:req.user.id}})
-    if(!teacherFound) {
-      throw new APIError(`there is no teacher found try again or signup as a teacher`,StatusCodes.NOT_FOUND)
+    const teacherFound = await prisma.teacher.findFirst({
+      where: { id: req.user.id },
+    });
+    if (!teacherFound) {
+      throw new APIError(
+        `there is no teacher found try again or signup as a teacher`,
+        StatusCodes.NOT_FOUND
+      );
     }
-    const examExist=await prisma.exam.findFirst({where:{name}})
-    if(examExist){
-      throw new APIError("the exam name already exists",StatusCodes.BAD_REQUEST)
+    const examExist = await prisma.exam.findFirst({ where: { name } });
+    if (examExist) {
+      throw new APIError(
+        "the exam name already exists",
+        StatusCodes.BAD_REQUEST
+      );
     }
-    const examCreated=await prisma.exam.create({data:{
-      name,
-      description,
-      program:{connect:{id:programId}},
-      subject:{connect:{id:subjectId}},
-      AcademicTerm:{connect:{id:academicTerm}},
-      duration,
-      examDate,
-      examTime,
-      examType,
-      teacher:{connect:{id:req.user.id}},
-      AcademicYear:{connect:{id:academicYear}},
-      classLevel:{connect:{id:classLevelId}}
-    }})
-    if(!examCreated){
-      throw new APIError("the exam couldn't be created",StatusCodes.INTERNAL_SERVER_ERROR)
+    const examCreated = await prisma.exam.create({
+      data: {
+        name,
+        description,
+        program: { connect: { id: programId } },
+        subject: { connect: { id: subjectId } },
+        AcademicTerm: { connect: { id: academicTerm } },
+        duration,
+        examDate,
+        examTime,
+        examType,
+        teacher: { connect: { id: req.user.id } },
+        AcademicYear: { connect: { id: academicYear } },
+        classLevel: { connect: { id: classLevelId } },
+      },
+    });
+    if (!examCreated) {
+      throw new APIError(
+        "the exam couldn't be created",
+        StatusCodes.INTERNAL_SERVER_ERROR
+      );
     }
-    res.status(StatusCodes.CREATED).json({status:'success',message:"Exam was created successfully",exam:examCreated})
+    res.status(StatusCodes.CREATED).json({
+      status: "success",
+      message: "Exam was created successfully",
+      exam: examCreated,
+    });
   }
-    //@desc   retrieve All existing Exams
+  //@desc   retrieve All existing Exams
   //@route  Get /api/v1/exams
   //@access  Private(Teacher)
 
@@ -60,7 +77,13 @@ export class Exam {
     next: NextFunction
   ): Promise<any> {
     try {
-      const Exams = await prisma.exam.findMany({});
+      const Exams = await prisma.exam.findMany({
+        include: {
+          questions: {
+            include: { teacher: true },
+          },
+        },
+      });
 
       if (!Exams) {
         throw new APIError(
@@ -76,7 +99,7 @@ export class Exam {
       next(error);
     }
   }
-    //@desc   retrieve an existing Exam
+  //@desc   retrieve an existing Exam
   //@route  Get /api/v1/exams/:id
   //@access  Private(Teacher)
 
@@ -86,7 +109,14 @@ export class Exam {
     next: NextFunction
   ): Promise<any> {
     try {
-      const Exam = await prisma.exam.findFirst({where:{id: req.params.id}});
+      const Exam = await prisma.exam.findFirst({
+        where: { id: req.params.id },
+        include: {
+          questions: {
+            include: { teacher: true },
+          },
+        },
+      });
 
       if (!Exam) {
         throw new APIError(
@@ -102,7 +132,7 @@ export class Exam {
       next(error);
     }
   }
-    //@desc   updating a specific Exam
+  //@desc   updating a specific Exam
   //@route  Patch /api/v1/exams/:id
   //@access  Private(Teacher)
   static async updateAnExam(
@@ -126,7 +156,7 @@ export class Exam {
       const exam = await prisma.exam.update({
         where: { id: req.params.id },
         data: {
-          ...req.body as Partial<ExamType>,
+          ...(req.body as Partial<ExamType>),
         },
       });
       if (!exam) {
@@ -143,5 +173,4 @@ export class Exam {
       next(error);
     }
   }
-
 }

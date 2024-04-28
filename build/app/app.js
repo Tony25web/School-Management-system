@@ -18,6 +18,7 @@ const YearGroup_1 = require("../routes/Academic/YearGroup");
 const Teacher_1 = require("../routes/staff/Teacher");
 const Exam_1 = require("../routes/Academic/Exam");
 const Student_1 = require("../routes/staff/Student");
+const Question_1 = require("../routes/Academic/Question");
 const APIError_1 = require("../utils/APIError");
 exports.app = (0, express_1.default)();
 exports.app.use(body_parser_1.default.json());
@@ -31,6 +32,7 @@ exports.app.use("/api/v1/year-groups", YearGroup_1.router);
 exports.app.use("/api/v1/teachers", Teacher_1.router);
 exports.app.use("/api/v1/exams", Exam_1.router);
 exports.app.use("/api/v1/students", Student_1.router);
+exports.app.use("/api/v1/questions", Question_1.router);
 exports.app.use((0, morgan_1.default)("dev"));
 exports.app.use(ErrorMiddleware_1.errorHandler);
 exports.app.all("*", (req, res, next) => {

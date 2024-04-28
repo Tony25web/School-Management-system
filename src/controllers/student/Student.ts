@@ -69,7 +69,6 @@ export class Student {
       next(error);
     }
   }
-
   //@desc   Get Student's Profile
   //@route GET /api/v1/students/profile
   //@access  Private Student only
