@@ -1,56 +1,56 @@
-model ExamResult {
-    id             String           @id @default(uuid())
-    Student        Student?         @relation(fields: [studentId], references: [id])
+model ExamResults {
+    id             String            @id @default(uuid())
+    Student        Student?          @relation(fields: [studentId], references: [id])
     studentId      String?
-    exam           Exam             @relation(fields: [examId], references: [id])
-    examId         String           @unique
-    student        Subject          @relation(fields: [subjectId], references: [id])
-    subjectId      String           @unique
-    acadamicYear   AcadamicYear     @relation(fields: [acadamicYearId], references: [id])
-    acadamicYearId String           @unique
-    acadaminTerm   AcadamicTerm     @relation(fields: [acadamicTermId], references: [id])
-    acadamicTermId String           @unique
-    classLevel     ClassLevel       @relation(fields: [classLevelId], references: [id])
-    classLevelId   String           @unique
+    exam           Exam?             @relation(fields: [examId], references: [id], onDelete: SetNull)
+    examId         String?           @unique
+    subject        Subject?          @relation(fields: [subjectId], references: [id], onDelete: SetNull)
+    subjectId      String?           @unique
+    acadamicYear   AcadamicYear?     @relation(fields: [acadamicYearId], references: [id], onDelete: SetNull)
+    acadamicYearId String?           @unique
+    academicTerm   AcadamicTerm?     @relation(fields: [acadamicTermId], references: [id], onDelete: SetNull)
+    acadamicTermId String?           @unique
+    classLevel     ClassLevel?       @relation(fields: [classLevelId], references: [id], onDelete: SetNull)
+    classLevelId   String?           @unique
     grade          Int
     score          Int
-    passMark       Int              @default(50)
-    status         ExamResultStatus @default(failed)
-    reamarks       Remarks          @default(poor)
-    position       Int
-    isPublished    Boolean          @default(false)
-    createdAt      DateTime         @default(now())
-    updatedAt      DateTime         @updatedAt()
+    passMark       Int               @default(50)
+    status         ExamResultStatus? @default(failed)
+    remarks        Remarks           @default(poor)
+    position       Int?              @default(0)
+    isPublished    Boolean           @default(false)
+    createdAt      DateTime          @default(now())
+    updatedAt      DateTime          @updatedAt()
 }
 
 model Student {
-    id         String       @id @default(uuid())
-    examResult ExamResult[]
+    id         String        @id @default(uuid())
+    examResult ExamResults[]
 }
 
 model Exam {
-    id         String      @id @default(uuid())
-    ExamResult ExamResult?
+    id         String       @id @default(uuid())
+    ExamResult ExamResults?
 }
 
 model AcadamicYear {
-    id         String      @id @default(uuid())
-    ExamResult ExamResult?
+    id         String       @id @default(uuid())
+    ExamResult ExamResults?
 }
 
 model AcadamicTerm {
-    id         String      @id @default(uuid())
-    ExamResult ExamResult?
+    id         String       @id @default(uuid())
+    ExamResult ExamResults?
 }
 
 model ClassLevel {
-    id         String      @id @default(uuid())
-    ExamResult ExamResult?
+    id         String       @id @default(uuid())
+    ExamResult ExamResults?
 }
 
 model Subject {
-    id         String      @id @default(uuid())
-    ExamResult ExamResult?
+    id         String       @id @default(uuid())
+    ExamResult ExamResults?
 }
 
 enum ExamResultStatus {
@@ -60,6 +60,8 @@ enum ExamResultStatus {
 
 enum Remarks {
     Excellent
+    veryGood
     good
+    fair
     poor
 }

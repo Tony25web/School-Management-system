@@ -1,9 +1,9 @@
 //class level is like the number of the year like the first year ,the second year ,etc...
 model ClassLevel {
     id          String    @id @default(uuid())
-    name        String
+    name        Int
     description String
-    admin       Admin?    @relation(fields: [adminId], references: [id])
+    admin       Admin?    @relation(fields: [adminId], references: [id], onDelete: SetNull)
     adminId     String?
     teachers    Teacher[]
     students    Student[]
@@ -19,18 +19,18 @@ model Admin {
 
 model Teacher {
     id           String      @id @default(uuid())
-    ClassLevel   ClassLevel? @relation(fields: [classLevelId], references: [id])
+    ClassLevel   ClassLevel? @relation(fields: [classLevelId], references: [id], onDelete: SetNull)
     classLevelId String?
 }
 
 model Student {
     id           String      @id @default(uuid())
-    classLevel   ClassLevel? @relation(fields: [classLevelId], references: [id])
+    classLevel   ClassLevel? @relation(fields: [classLevelId], references: [id], onDelete: SetNull)
     classLevelId String?
 }
 
 model Subject {
     id           String      @id @default(uuid())
-    ClassLevel   ClassLevel? @relation(fields: [classLevelId], references: [id])
+    ClassLevel   ClassLevel? @relation(fields: [classLevelId], references: [id], onDelete: SetNull)
     classLevelId String?
 }

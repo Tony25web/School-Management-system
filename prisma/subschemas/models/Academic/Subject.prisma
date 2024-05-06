@@ -1,15 +1,15 @@
 model Subject {
-    id             String       @id @default(uuid())
+    id             String        @id @default(uuid())
     name           String
     description    String?
-    acadamic       AcadamicTerm @relation(fields: [acadamicTermId], references: [id])
-    acadamicTermId String       @unique
-    admin          Admin        @relation(fields: [adminId], references: [id])
-    adminId        String
-    duration       String       @default("3 Months")
-    createAt       DateTime     @default(now())
-    updateAt       DateTime     @updatedAt
-    teacher        Teacher?     @relation(fields: [teacherId], references: [id])
+    acadamic       AcadamicTerm? @relation(fields: [acadamicTermId], references: [id], onDelete: SetNull)
+    acadamicTermId String?       @unique
+    admin          Admin?        @relation(fields: [adminId], references: [id], onDelete: SetNull)
+    adminId        String?
+    duration       String        @default("3 Months")
+    createAt       DateTime      @default(now())
+    updateAt       DateTime      @updatedAt
+    teacher        Teacher?      @relation(fields: [teacherId], references: [id], onDelete: SetNull)
     teacherId      String?
 }
 

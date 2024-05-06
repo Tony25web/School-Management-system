@@ -1,12 +1,12 @@
 model YearGroup {
     id             String        @id @default(uuid())
     name           String
-    acadamicYear   AcadamicYear? @relation(fields: [acadamicYearId], references: [id])
-    acadamicYearId String        @unique
+    acadamicYear   AcadamicYear? @relation(fields: [acadamicYearId], references: [id], onDelete: SetNull)
+    acadamicYearId String?       @unique
     createAt       DateTime      @default(now())
     updateAt       DateTime      @updatedAt
-    admin          Admin         @relation(fields: [adminId], references: [id])
-    adminId        String
+    admin          Admin?        @relation(fields: [adminId], references: [id], onDelete: SetNull)
+    adminId        String?
 }
 
 model Admin {

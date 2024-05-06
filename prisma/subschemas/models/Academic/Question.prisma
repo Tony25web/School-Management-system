@@ -7,8 +7,8 @@ model Question {
     optionD       String
     correctAnswer String
     isCorrect     Boolean  @default(false)
-    teacher       Teacher  @relation(fields: [createdBy], references: [id])
-    createdBy     String   @unique
+    teacher       Teacher? @relation(fields: [createdBy], references: [id], onDelete: SetNull)
+    createdBy     String?  @unique
     createAt      DateTime @default(now())
     updateAt      DateTime @updatedAt
 }

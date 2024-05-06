@@ -1,27 +1,27 @@
 model Exam {
-    id           String       @id @default(uuid())
+    id           String        @id @default(uuid())
     name         String
     description  String
-    subject      Subject      @relation(fields: [subjectId], references: [id])
-    subjectId    String       @unique
-    program      Program      @relation(fields: [programId], references: [id])
+    subject      Subject       @relation(fields: [subjectId], references: [id])
+    subjectId    String        @unique
+    program      Program       @relation(fields: [programId], references: [id])
     programId    String
-    passMark     Int          @default(50)
-    totalMark    Int          @default(100)
-    duration     String       @default("30")
+    passMark     Int           @default(50)
+    totalMark    Int           @default(100)
+    duration     String        @default("30")
     examDate     String
     examTime     String
-    examType     String       @default("Quiz")
-    examStatus   ExamStatus   @default(pending)
+    examType     String        @default("Quiz")
+    examStatus   ExamStatus    @default(pending)
     questions    Question[]
-    classLevel   ClassLevel   @relation(fields: [classLevelId], references: [id])
-    classLevelId String       @unique
-    AcademicYear AcadamicYear @relation(fields: [academicYear], references: [id])
-    academicYear String       @unique
-    AcademicTerm AcadamicTerm @relation(fields: [academicTerm], references: [id])
-    academicTerm String       @unique
-    createAt     DateTime     @default(now())
-    updateAt     DateTime     @updatedAt
+    classLevel   ClassLevel?   @relation(fields: [classLevelId], references: [id], onDelete: SetNull)
+    classLevelId String?       @unique
+    AcademicYear AcadamicYear? @relation(fields: [academicYear], references: [id], onDelete: SetNull)
+    academicYear String?       @unique
+    AcademicTerm AcadamicTerm? @relation(fields: [academicTerm], references: [id], onDelete: SetNull)
+    academicTerm String?       @unique
+    createAt     DateTime      @default(now())
+    updateAt     DateTime      @updatedAt
 }
 
 model Subject {
@@ -47,7 +47,7 @@ enum ExamStatus {
 
 model Question {
     id     String  @id @default(uuid())
-    Exam   Exam?   @relation(fields: [examId], references: [id])
+    Exam   Exam?   @relation(fields: [examId], references: [id], onDelete: SetNull)
     examId String?
 }
 

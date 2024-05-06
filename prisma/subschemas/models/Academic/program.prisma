@@ -4,8 +4,8 @@ model Program {
     description String
     duration    String    @default("4 Years")
     code        String    @default("")
-    adminId     Admin     @relation(fields: [createdBy], references: [id])
-    createdBy   String
+    adminId     Admin?    @relation(fields: [createdBy], references: [id], onDelete: SetNull)
+    createdBy   String?
     teachers    Teacher[]
     students    Student[]
     Subjects    Subject[]
@@ -20,18 +20,18 @@ model Admin {
 
 model Teacher {
     id        String   @id @default(uuid())
-    program   Program? @relation(fields: [programId], references: [id])
+    program   Program? @relation(fields: [programId], references: [id], onDelete: SetNull)
     programId String?
 }
 
 model Student {
     id        String   @id @default(uuid())
-    program   Program? @relation(fields: [programId], references: [id])
+    program   Program? @relation(fields: [programId], references: [id], onDelete: SetNull)
     programId String?
 }
 
 model Subject {
-    id        String  @id @default(uuid())
-    program   Program @relation(fields: [programId], references: [id])
-    programId String
+    id        String   @id @default(uuid())
+    program   Program? @relation(fields: [programId], references: [id], onDelete: SetNull)
+    programId String?
 }
