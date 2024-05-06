@@ -45,14 +45,14 @@ export class Exam {
         description,
         program: { connect: { id: programId } },
         subject: { connect: { id: subjectId } },
-        AcademicTerm: { connect: { id: academicTerm } },
+        AcademicTerm: { connect: { id: (academicTerm) as string } },
         duration,
         examDate,
         examTime,
         examType,
         teacher: { connect: { id: req.user.id } },
-        AcademicYear: { connect: { id: academicYear } },
-        classLevel: { connect: { id: classLevelId } },
+        AcademicYear: { connect: { id:( academicYear) as string} },
+        classLevel: { connect: { id: (classLevelId) as string } },
       },
     });
     if (!examCreated) {

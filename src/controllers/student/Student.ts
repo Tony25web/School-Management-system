@@ -1,4 +1,8 @@
-import { Student as StudentType } from "@prisma/client";
+import {
+  ExamResultStatus,
+  Remarks,
+  Student as StudentType,
+} from "@prisma/client";
 import { Request, Response, NextFunction } from "express";
 import { PrismaClientProvider } from "../PrismaClient";
 import { APIError } from "../../utils/APIError";
@@ -7,6 +11,13 @@ import { Auth } from "../../middlewares/Authentication";
 import { StudentExtension } from "../../Prisma Extensions/Student";
 import { exclude } from "../../utils/Exclude";
 const prisma = PrismaClientProvider.getPrismaClient();
+const CLASS_LEVEL_DIFFERENCE=100;
+const CLASS_LEVEL_LIMIT=400
+type queryString = {
+  classLevel?: boolean;
+  AcadamicYear?: boolean;
+  program?: boolean;
+};
 interface studentPayload {
   name?: string;
   email?: string;
@@ -111,9 +122,21 @@ export class Student {
   //@desc   Get All Students
   //@route GET /api/v1/students/admin
   //@access  Private Admin only
-  static async getAllStudents(req: Request, res: Response, next: NextFunction) {
+  static async getAllStudents(
+    req: Request<{}, {}, {}, queryString>,
+    res: Response,
+    next: NextFunction
+  ) {
     try {
-      const students = await prisma.student.findMany({});
+      const { AcadamicYear, classLevel, program } = req.query;
+      console.log(typeof AcadamicYear);
+      const students = await prisma.student.findMany({
+        include: {
+          AcadamicYear: !!AcadamicYear,
+          classLevel: !!classLevel,
+          program: !!program,
+        },
+      });
       if (!students) {
         throw new APIError(
           "there is no students to fetch",
@@ -214,7 +237,7 @@ export class Student {
       if (!student) {
         throw new APIError("student not found", StatusCodes.NOT_FOUND);
       }
-      const updatedStudent = await prisma.student.update({
+      const updatedStudent = await StudentExtension.student.update({
         where: { id: req.params.studentId },
         data: {
           AcadamicYear: AcadamicYearId
@@ -253,11 +276,22 @@ export class Student {
       // retrieve the exam that the student wants to take
       const examFound = await prisma.exam.findFirst({
         where: { id: req.params.examId },
-        include: { questions: true },
+        include: { questions: true, AcademicTerm: true },
       });
       if (!examFound) {
         throw new APIError("exam not found", StatusCodes.NOT_FOUND);
       }
+      //check if the student already has taken the exam
+      const studentFoundInExamResult = await prisma.examResults.findFirst({
+        where: { studentId: studentFound.id },
+      });
+      if (studentFoundInExamResult) {
+        throw new APIError(
+          "student has already taken this exam",
+          StatusCodes.BAD_REQUEST
+        );
+      }
+
       // retrieve the questions
       const questions = examFound?.questions;
       // retrieve the answers of the student
@@ -271,10 +305,16 @@ export class Student {
       // Build report Object
       let correctAnswers = 0,
         wrongAnswers = 0,
-        totalQuestions = 0,
+        totalQuestions,
         grade = 0,
         score = 0,
-        answeredQuestions = [] as Array<{name:string,correctAnswer:string,isCorrect:boolean}>;
+        answeredQuestions = [] as Array<{
+          name: string;
+          correctAnswer: string;
+          isCorrect: boolean;
+        }>,
+        status: ExamResultStatus | undefined,
+        remarks: Remarks | undefined;
 
       //  check for answers
       for (let i = 0; i < questions.length; i++) {
@@ -288,28 +328,78 @@ export class Student {
         } else {
           wrongAnswers++;
         }
-        //calculate reports
-        totalQuestions = questions.length;
-        grade = (correctAnswers / totalQuestions) * 100;
-        answeredQuestions = questions.map((question) => {
-          return {
-            name: question.questionName,
-            correctAnswer: question.correctAnswer,
-            isCorrect: question.isCorrect,
-          };
+      }
+      //calculate reports
+      totalQuestions = questions.length;
+      grade = (correctAnswers / totalQuestions) * 100;
+      answeredQuestions = questions.map((question) => {
+        return {
+          name: question.questionName,
+          correctAnswer: question.correctAnswer,
+          isCorrect: question.isCorrect,
+        };
+      });
+      // status of the student
+      status = grade > 50 ? ExamResultStatus.passed : ExamResultStatus.failed;
+      //Remarks
+      if (grade >= 80) {
+        remarks = Remarks.Excellent;
+      } else if (grade >= 70) {
+        remarks = Remarks.Excellent;
+      } else if (grade >= 60) {
+        remarks = Remarks.good;
+      } else if (grade >= 50) {
+        remarks = Remarks.fair;
+      } else {
+        remarks = Remarks.poor;
+      }
+      await prisma.examResults.create({
+        data: {
+          Student: { connect: { id: req.user.id } },
+          exam: { connect: { id: examFound.id } },
+          subject: { connect: { id: examFound.subjectId } },
+          acadamicYear: { connect: { id: examFound.academicYear as string } },
+          classLevel: { connect: { id: examFound.classLevelId as string } },
+          academicTerm: { connect: { id: examFound.academicTerm as string } },
+          grade,
+          score,
+          status,
+          remarks,
+        },
+      });
+      //promoting student
+  
+      let newlyUpdatedStudent;
+      if (
+        examFound.AcademicTerm?.name === "3rd Term" &&
+        status === ExamResultStatus.passed
+      ) {
+        //check if the student is in the last level in order to change his status to graduated
+        if(studentFound.currentClassLevel===CLASS_LEVEL_LIMIT){
+          const yearGraduated=new Date().toISOString()
+          newlyUpdatedStudent=await prisma.student.update({where:{id:studentFound.id},data:{isGraduated:true,yearGraduated}})
+        }
+        //promote student to the next level
+        let newStudentClassLevel = await prisma.classLevel.findFirst({
+          where: {
+            name:studentFound.currentClassLevel+CLASS_LEVEL_DIFFERENCE,
+            
+          },
         });
+        if (newStudentClassLevel) {
+          newlyUpdatedStudent = await prisma.student.update({
+            where: { id: studentFound.id },
+            data: {
+              currentClassLevel: newStudentClassLevel?.name,
+              classLevel: { connect: { id: newStudentClassLevel.id } },
+            },
+          });
+        }
       }
       res.status(StatusCodes.OK).json({
         status: "success",
-        message: "student updated successfully",
-        Result: {
-          correctAnswers,
-          wrongAnswers,
-          score,
-          totalQuestions,
-          grade,
-          answeredQuestions,
-        },
+        message: "you have successfully submitted the exam ,check later for the results",
+      
       });
     } catch (error: Error | unknown) {
       next(error);

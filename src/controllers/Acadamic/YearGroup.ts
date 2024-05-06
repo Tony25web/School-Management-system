@@ -26,7 +26,7 @@ export class YearGroup{
         data: {
           name,
           acadamicYear:{
-          connect:{id:acadamicYearId}
+          connect:{id:(acadamicYearId)as string}
          },
          admin:{
           connect:{id:req.user.id}

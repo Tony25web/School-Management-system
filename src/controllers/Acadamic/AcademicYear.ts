@@ -124,7 +124,6 @@ export class AcademicYear {
             createdBy: req.user.id,
         },
       });
-console.log(academicYear)
       if (!academicYear) {
         throw new APIError(
           "could not update the year because there is no record with the specified id found ",

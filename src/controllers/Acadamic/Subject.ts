@@ -7,7 +7,7 @@ const prisma = PrismaClientProvider.getPrismaClient();
 export class Subject {
   //@desc   Creating a New Subject
   //@route  POST /api/v1/subjects/:programId
-  //@access  Private(Admin)
+  //@access  Private(Admin) 
   static async createSubject(
     req: Request,
     res: Response,
@@ -35,7 +35,7 @@ export class Subject {
           name,
           description,
          acadamic:{
-          connect:{id:acadamicTermId}
+          connect:{id:(acadamicTermId)as string}
          },
          program:{
           connect:{id:req.params.programId}

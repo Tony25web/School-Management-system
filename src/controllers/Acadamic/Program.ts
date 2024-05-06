@@ -3,6 +3,7 @@ import { PrismaClientProvider } from "../PrismaClient";
 import { Program as ProgramType } from "@prisma/client";
 import { APIError } from "../../utils/APIError";
 import { StatusCodes } from "http-status-codes";
+import { ProgramExtension } from "../../Prisma Extensions/Program";
 const prisma = PrismaClientProvider.getPrismaClient();
 export class Program {
   //@desc   Creating a New Program
@@ -22,7 +23,7 @@ export class Program {
           StatusCodes.BAD_REQUEST
         );
       }
-      const programCreated = await prisma.program.create({
+      const programCreated = await ProgramExtension.program.create({
         data: {
           name,
           description,
@@ -50,8 +51,9 @@ export class Program {
     next: NextFunction
   ): Promise<any> {
     try {
+      const subjects=!!req.query.subjects;// parsing the incoming query string parameter into boolean using !!
       const Programs = await prisma.program.findMany({
-        where: { createdBy: req.user?.id } || {},
+        where: { createdBy: req.user?.id } || {},include:{Subjects:subjects}
       });
 
       if (!Programs) {

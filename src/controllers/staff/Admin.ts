@@ -124,7 +124,7 @@ try{
     }
   }
 
-const updatedAdmin=await prisma.admin.update({where:{id:req.params.id},data:{...req.body,password:await Auth.hash(req.body.password)}})
+const updatedAdmin=await prisma.admin.update({where:{id:req.params.id},data:{...req.body}})
 const admin_Obj= exclude<AdminType,keyof AdminType>(updatedAdmin, ['password']);
 if(!updatedAdmin){
   throw new APIError("there is no admin to update",StatusCodes.NOT_FOUND)
