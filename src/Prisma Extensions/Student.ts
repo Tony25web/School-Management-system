@@ -21,10 +21,13 @@ export const StudentExtension = prisma.$extends({
         if(args.data.password){
           args.data.password=await Auth.hash(args.data.password as string)
         }
-        
+        if(!args.data.currentClassLevel){
+          const classLevelName:number=(await prisma.classLevel.findFirst({where:{id:(args.data.classLevel?.connect?.id) as string},select:{name:true}}))?.name as number
+          args.data.currentClassLevel= classLevelName
+          console.log(args.data)
+        }
             return query(args)
-      },
-      
+      }
     },
   },
 });
